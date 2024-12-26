@@ -40,6 +40,7 @@ public class Moevment : MonoBehaviour
     private float realBuffer;
     private float coyotiBuffer;
     private float lastDesiredMoveSpeed;
+    private float angle;
     [SerializeField]public bool sliding;
     
     void Start()
@@ -101,6 +102,7 @@ public class Moevment : MonoBehaviour
         }
         
         lastDesiredMoveSpeed = desiredMoveSpeed;
+        
     }
 
     private IEnumerator Smooth()
@@ -127,6 +129,7 @@ public class Moevment : MonoBehaviour
             yield return null;
         }
         movementSpeed = desiredMoveSpeed;
+        //print(difrence + " " + time );
     }
     void FixedUpdate()
     {
@@ -195,12 +198,18 @@ public class Moevment : MonoBehaviour
 
     public bool OnSlope()
     {
+        
         if (Physics.Raycast(Legs.position, Legs.TransformDirection(Vector3.down), out slopeHit, radius))
         {
-            float angle = Vector3.Angle(Vector3.up,slopeHit.normal);
-            return angle < slopeAngle && angle != 0; 
+            angle = Vector3.Angle(Vector3.up,slopeHit.normal);
+            if (angle < slopeAngle && angle != 0)
+            {
+                return true;
+            }
         }
         return false; 
+        
+        
     }
 
     public Vector3 GetSlopeDirection(Vector3 direction)
