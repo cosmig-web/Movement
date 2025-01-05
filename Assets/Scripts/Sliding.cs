@@ -35,7 +35,7 @@ public class Sliding : MonoBehaviour
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 
-        if (Input.GetButtonDown("Slide") && (horizontal != 0 || vertical != 0))
+        if (Input.GetButtonDown("Slide") && (horizontal != 0 || vertical != 0) && !moevment.sliding)
         {
             startSlide();
         }
@@ -43,37 +43,32 @@ public class Sliding : MonoBehaviour
         {
             stopSlide();
         }
+        //print(moevment.OnSlope());
     }
 
     void FixedUpdate()
     {
-        if (moevment.sliding)
+        if (moevment.OnSlope())
         {
-            Slide();
+            OnSlopeSlide();
         }
     }
     public void startSlide()
     {
+        Vector3 slideDirection = orentation.forward * vertical + orentation.right * horizontal;
         moevment.sliding = true;
         
         Playerobj.localScale = new Vector3(Playerobj.localScale.x, YSliding, Playerobj.localScale.z);
         rb.AddForce(Vector3.down * 5f, ForceMode.Force);
-        
+        rb.AddForce(slideDirection * slidingForce, ForceMode.Force);
+
+
     }
 
-    public void Slide()
+    public void OnSlopeSlide()
     {
         Vector3 slideDirection = orentation.forward * vertical + orentation.right * horizontal;
-        if (!moevment.OnSlope() || rb.velocity.y > -0.1f)
-        {
-            rb.AddForce(slideDirection * slidingForce, ForceMode.Force);
-        }
-        else
-        {
-            rb.AddForce(moevment.GetSlopeDirection(slideDirection) * slidingForce, ForceMode.Force);
-        }
-        
-        
+        rb.AddForce(moevment.GetSlopeDirection(slideDirection) * slidingForce, ForceMode.Force);
     }
     public void stopSlide()
     {

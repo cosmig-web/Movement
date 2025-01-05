@@ -61,6 +61,7 @@ public class Enemy : MonoBehaviour
                 target = path[currentPathIndex];
                 if (1+(indexer) >= path.Count)
                 {
+                    
                     indexer = 0;
                     if (loop)
                     {

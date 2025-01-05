@@ -158,8 +158,12 @@ MonoBehaviour:
   head: {fileID: 1752383136}
   speed: 4.5
   legs: {fileID: 418370228}
-  path: []
+  path:
+  - {x: 30.755, y: 1.2, z: -34.67015}
+  - {x: 21.3, y: 1.2, z: -46.6}
+  - {x: 17.4, y: 1.2, z: -38}
   currentPathIndex: 0
+  loop: 1
 --- !u!54 &308456567
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -196,7 +200,7 @@ Transform:
   m_GameObject: {fileID: 308456565}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30.755, y: 1.533501, z: -34.67015}
+  m_LocalPosition: {x: 30.755, y: 1.2, z: -34.67015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1072,8 +1076,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f49bdb8fcac2d92198713f946242ffd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensX: 5000
-  sensY: 5000
+  sensX: 400
+  sensY: 400
   orentation: {fileID: 1089849515}
 --- !u!1 &1077135546
 GameObject:
@@ -1398,6 +1402,7 @@ MonoBehaviour:
   orientation: {fileID: 1089849515}
   movementDirection: {x: 0, y: 0, z: 0}
   slideSpeed: 30
+  distance: 4
   GroundDrag: 10
   Legs: {fileID: 644735200}
   radius: 0.2
@@ -1408,7 +1413,7 @@ MonoBehaviour:
   airResistance: 0.2
   jumpBuffer: 0.2
   coyotiTime: 0.2
-  slopeAngle: 45
+  slopeAngle: 150
   speedIncreaseMultiplier: 2
   slopeIncreaseMultiplier: 2
   sliding: 0
@@ -1662,13 +1667,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872163890}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.23887776, y: -0, z: -0, w: 0.9710497}
+  m_LocalRotation: {x: 0.29651558, y: -0, z: -0, w: 0.9550281}
   m_LocalPosition: {x: 1.2357, y: 23.2, z: -78.2}
   m_LocalScale: {x: 19.474432, y: 2.0012672, z: 144.6693}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 27.641, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 34.497, y: 0, z: 0}
 --- !u!1 &1911172864
 GameObject:
   m_ObjectHideFlags: 0

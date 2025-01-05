@@ -10,6 +10,7 @@ public class Moevment : MonoBehaviour
     public Transform orientation;
     public Vector3 movementDirection;
     public float slideSpeed = 5f;
+    public float distance = 5;
     private float desiredMoveSpeed ;
 
     public float GroundDrag = 0.2f;
@@ -41,10 +42,12 @@ public class Moevment : MonoBehaviour
     private float coyotiBuffer;
     private float lastDesiredMoveSpeed;
     private float angle;
+    private float speed;
     [SerializeField]public bool sliding;
     
     void Start()
     {
+        speed = movementSpeed;
         rb = GetComponent<Rigidbody>();
         realBuffer = jumpBuffer;
         desiredMoveSpeed = movementSpeed;
@@ -91,7 +94,7 @@ public class Moevment : MonoBehaviour
             
         }
 
-        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && movementSpeed != 0)
+        if (isGrounded)
         {
             StopAllCoroutines();
             StartCoroutine(Smooth());
@@ -100,7 +103,6 @@ public class Moevment : MonoBehaviour
         {
             movementSpeed = desiredMoveSpeed;
         }
-        
         lastDesiredMoveSpeed = desiredMoveSpeed;
         
     }
@@ -109,14 +111,14 @@ public class Moevment : MonoBehaviour
     {
         float time = 0;
         float difrence = Mathf.Abs(desiredMoveSpeed - movementSpeed);
-        float startValue = movementSpeed;
+        float startValue = speed;
 
         while (time < difrence)
         {
             movementSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difrence);
             if (OnSlope())
             {
-                float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+                float angle = Vector3.Angle(Vector3.down, slopeHit.normal);
                 float slopeAngleIncrese = 1 + (slopeAngle / 90);
                 
                 time += Time.deltaTime * speedIncreaseMultiplier * slopeIncreaseMultiplier * slopeAngleIncrese;
@@ -199,13 +201,14 @@ public class Moevment : MonoBehaviour
     public bool OnSlope()
     {
         
-        if (Physics.Raycast(Legs.position, Legs.TransformDirection(Vector3.down), out slopeHit, radius))
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out slopeHit, distance))
         {
-            angle = Vector3.Angle(Vector3.up,slopeHit.normal);
+            angle = Vector3.Angle(Vector3.down,slopeHit.normal);
             if (angle < slopeAngle && angle != 0)
             {
                 return true;
             }
+            
         }
         return false; 
         
@@ -218,10 +221,7 @@ public class Moevment : MonoBehaviour
     }
     /*private void OnDrawGizmos()
     {
-        if(Legs !=  null)
-        {
-            Gizmos.DrawLine(Legs.position, Legs.position + Legs.TransformDirection(Vector3.down) * radius);
-        }
-
-    }*/
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector3.down) * distance);
+    }*/ 
 }
