@@ -11,7 +11,7 @@ public class Moevment : MonoBehaviour
     public Vector3 movementDirection;
     public float slideSpeed = 5f;
     public float distance = 5;
-    private float desiredMoveSpeed ;
+    private float desiredMoveSpeed;
 
     public float GroundDrag = 0.2f;
     
@@ -28,10 +28,35 @@ public class Moevment : MonoBehaviour
     public float slopeAngle = 45f;
     public float speedIncreaseMultiplier = 2f;
     public float slopeIncreaseMultiplier = 2f;
+
+    [Header("Attacking")]
+    public float attackDistance = 3f;
+    public float attackDelay = 0.4f;
+    public float attackSpped = 1f;
+    public LayerMask attackLayer;
+
+    [Header("Animations")]
+    public Animator animator;
+    public const string IDLE = "Idle";
+    public const string WALK = "Walk";
+    public const string ATTACK1 = "Attack 1";
+    public const string ATTACK2 = "Attack 2";
     
-    
+
+    string currentAnimationState;
+
+    public GameObject hitEffect;
+    public AudioClip swordSwing;
+    public AudioClip hitSound;
+
+    private Camera cam;
+    private AudioSource audios;
+    private bool attacking = false;
+    private bool readyToAttack = true;
+    private int attackCount;
     private RaycastHit slopeHit;
     private Rigidbody rb;
+    
     private float horizontal;
     private bool isGrounded;
     private RaycastHit hit;
@@ -47,40 +72,20 @@ public class Moevment : MonoBehaviour
     
     void Start()
     {
+        audios = GetComponent<AudioSource>();
         speed = movementSpeed;
         rb = GetComponent<Rigidbody>();
         realBuffer = jumpBuffer;
         desiredMoveSpeed = movementSpeed;
-      
+        cam = Camera.main;
+
+
+
     }
 
     void Update()
     {
-        x = Input.GetAxisRaw("Horizontal");
-        z = Input.GetAxisRaw("Vertical");
-        isGrounded = Physics.Raycast(Legs.position, Legs.TransformDirection(Vector3.down), out hit, radius, groundMask);
-        if (isGrounded)
-        {
-            coyotiBuffer = coyotiTime;
-        }
-        else
-        {
-            coyotiBuffer -= Time.deltaTime;
-        }
-        if (Input.GetButtonDown("Jump"))
-        {
-            realBuffer = jumpBuffer;
-        }
-        else
-        {
-            realBuffer -= Time.deltaTime;
-        }
-        if (realBuffer > 0 && coyotiBuffer > 0)
-        {
-            realBuffer = 0;
-            Jump();
-        }
-
+        Jumping();
         if (sliding)
         {
             if (OnSlope() && rb.velocity.y < 0.1f)
@@ -104,6 +109,12 @@ public class Moevment : MonoBehaviour
             movementSpeed = desiredMoveSpeed;
         }
         lastDesiredMoveSpeed = desiredMoveSpeed;
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            Attack();
+        }
+        SetAnimations();
         
     }
 
@@ -187,6 +198,35 @@ public class Moevment : MonoBehaviour
         rb.AddForce(transform.up * jump, ForceMode.Impulse);
     }
 
+    private void Jumping()
+    {
+        x = Input.GetAxisRaw("Horizontal");
+        z = Input.GetAxisRaw("Vertical");
+        isGrounded = Physics.Raycast(Legs.position, Legs.TransformDirection(Vector3.down), out hit, radius, groundMask);
+        if (isGrounded)
+        {
+            coyotiBuffer = coyotiTime;
+        }
+        else
+        {
+            coyotiBuffer -= Time.deltaTime;
+        }
+        if (Input.GetButtonDown("Jump"))
+        {
+            realBuffer = jumpBuffer;
+        }
+        else
+        {
+            realBuffer -= Time.deltaTime;
+        }
+        if (realBuffer > 0 && coyotiBuffer > 0)
+        {
+            realBuffer = 0;
+            Jump();
+        }
+    }
+      
+
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -218,6 +258,78 @@ public class Moevment : MonoBehaviour
     public Vector3 GetSlopeDirection(Vector3 direction)
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+    }
+
+    void SetAnimations()
+    {
+        if(!attacking)
+        {
+            if(rb.velocity.x == 0 && rb.velocity.z == 0)
+            {
+                ChangeAnimationState(IDLE);
+            }
+            else
+            {
+                ChangeAnimationState(WALK);
+            }
+        }
+    }
+
+    public void ChangeAnimationState(string newState)
+    {
+        if(currentAnimationState == newState) return;
+
+        currentAnimationState = newState;
+        animator.CrossFadeInFixedTime(currentAnimationState, 0.2f);
+        
+    }
+
+    void HitTarget(Vector3 pos)
+    {
+        audios.pitch = 1;
+        audios.PlayOneShot(hitSound);
+
+        GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
+        Destroy(GO);
+    }
+
+    void AttckRaycast()
+    {
+        if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
+        {
+            HitTarget(hit.point);
+        }
+    }
+
+    void ResetAttack()
+    {
+        attacking = false;
+        readyToAttack = true;
+    }
+
+    public void Attack()
+    {
+        if (!readyToAttack || attacking) return;
+        
+        readyToAttack = false;
+        attacking = true;
+
+        Invoke(nameof(ResetAttack), attackSpped);
+        Invoke(nameof(AttckRaycast), attackDelay);
+
+        audios.pitch = Random.Range(0.9f, 1.1f);
+        audios.PlayOneShot(swordSwing);
+
+        if(attackCount == 0)
+        {
+            ChangeAnimationState(ATTACK1);
+            attackCount++;
+        }
+        else
+        {
+            ChangeAnimationState(ATTACK2);
+            attackCount = 0;
+        }
     }
     /*private void OnDrawGizmos()
     {
