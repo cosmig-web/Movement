@@ -284,14 +284,7 @@ public class Moevment : MonoBehaviour
         
     }
 
-    void HitTarget(Vector3 pos)
-    {
-        audios.pitch = 1;
-        audios.PlayOneShot(hitSound);
-
-        GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
-        Destroy(GO);
-    }
+    
 
     void AttckRaycast()
     {
@@ -299,6 +292,16 @@ public class Moevment : MonoBehaviour
         {
             HitTarget(hit.point);
         }
+    }
+    
+    void HitTarget(Vector3 pos)
+    {
+        audios.pitch = 1;
+        audios.PlayOneShot(hitSound);
+
+        GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
+        
+        Destroy(GO);
     }
 
     void ResetAttack()

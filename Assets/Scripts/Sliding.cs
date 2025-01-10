@@ -35,9 +35,14 @@ public class Sliding : MonoBehaviour
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 
-        if (Input.GetButtonDown("Slide") && (horizontal != 0 || vertical != 0) && !moevment.sliding)
+        if (Input.GetButtonDown("Slide") && (horizontal != 0 || vertical != 0) && !moevment.sliding && !moevment.OnSlope())
         {
             startSlide();
+        }
+
+        if (Input.GetButtonDown("Slide") && (horizontal != 0 || vertical != 0) && moevment.OnSlope())
+        {
+            OnSlopeSlide();
         }
         if (Input.GetButtonUp("Slide") && moevment.sliding)
         {
@@ -57,7 +62,6 @@ public class Sliding : MonoBehaviour
     {
         Vector3 slideDirection = orentation.forward * vertical + orentation.right * horizontal;
         moevment.sliding = true;
-        
         Playerobj.localScale = new Vector3(Playerobj.localScale.x, YSliding, Playerobj.localScale.z);
         rb.AddForce(Vector3.down * 5f, ForceMode.Force);
         rb.AddForce(slideDirection * slidingForce, ForceMode.Force);
