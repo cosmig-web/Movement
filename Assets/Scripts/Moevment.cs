@@ -34,6 +34,7 @@ public class Moevment : MonoBehaviour
     public float attackDelay = 0.4f;
     public float attackSpped = 1f;
     public LayerMask attackLayer;
+    public Camera cam;
 
     [Header("Animations")]
     public Animator animator;
@@ -41,6 +42,7 @@ public class Moevment : MonoBehaviour
     public const string WALK = "Walk";
     public const string ATTACK1 = "Attack 1";
     public const string ATTACK2 = "Attack 2";
+
     
 
     string currentAnimationState;
@@ -49,7 +51,7 @@ public class Moevment : MonoBehaviour
     public AudioClip swordSwing;
     public AudioClip hitSound;
 
-    private Camera cam;
+    
     private AudioSource audios;
     private bool attacking = false;
     private bool readyToAttack = true;
@@ -69,7 +71,8 @@ public class Moevment : MonoBehaviour
     private float angle;
     private float speed;
     [SerializeField]public bool sliding;
-    
+    [SerializeField] public bool hit_enemy;
+
     void Start()
     {
         audios = GetComponent<AudioSource>();
@@ -77,7 +80,6 @@ public class Moevment : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         realBuffer = jumpBuffer;
         desiredMoveSpeed = movementSpeed;
-        cam = Camera.main;
 
 
 
@@ -291,7 +293,12 @@ public class Moevment : MonoBehaviour
         if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
         {
             HitTarget(hit.point);
+            if(hit.collider.tag == "Enemy")
+            {
+                Destroy(hit.rigidbody.gameObject);
+            }
         }
+        
     }
     
     void HitTarget(Vector3 pos)
@@ -302,6 +309,7 @@ public class Moevment : MonoBehaviour
         GameObject GO = Instantiate(hitEffect, pos, Quaternion.identity);
         
         Destroy(GO);
+        
     }
 
     void ResetAttack()
@@ -333,10 +341,15 @@ public class Moevment : MonoBehaviour
             ChangeAnimationState(ATTACK2);
             attackCount = 0;
         }
+        
     }
-    /*private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector3.down) * distance);
-    }*/ 
+        if(attacking)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * attackDistance);
+        }
+        
+    }
 }

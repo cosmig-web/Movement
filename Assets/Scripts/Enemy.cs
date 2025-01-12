@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public float distance = 10f;
     public float radius = 10f;
     public Transform head;
+    public Moevment move;
 
     [Header("Movement")]
     public float speed = 4.5f;
@@ -77,8 +78,8 @@ public class Enemy : MonoBehaviour
                 }
             }
             transform.LookAt(target);
-            transform.position += transform.forward * speed * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
+            rb.position += transform.forward * speed * Time.deltaTime;
+            rb.rotation = Quaternion.Euler(transform.rotation.x, 0, transform.rotation.z);
             
         }
     }
@@ -89,14 +90,16 @@ public class Enemy : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(head.position, head.TransformDirection(distance, distance , distance).normalized);
     }*/
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         for (int i = 0; i < path.Count - 1; i++)
         {
             Gizmos.DrawLine(path[i], path[i + 1]);
         }
-    }
+    }*/
 
     
+
+
 }
