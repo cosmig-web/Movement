@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Moevment : MonoBehaviour
 {
@@ -42,6 +43,7 @@ public class Moevment : MonoBehaviour
     public const string WALK = "Walk";
     public const string ATTACK1 = "Attack 1";
     public const string ATTACK2 = "Attack 2";
+    
 
     
 
@@ -62,6 +64,7 @@ public class Moevment : MonoBehaviour
     private float horizontal;
     private bool isGrounded;
     private RaycastHit hit;
+    public string level = "End";
     private Vector2 input;
     private float x;
     private float z;
@@ -80,6 +83,7 @@ public class Moevment : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         realBuffer = jumpBuffer;
         desiredMoveSpeed = movementSpeed;
+        lastDesiredMoveSpeed = movementSpeed;
 
 
 
@@ -88,9 +92,8 @@ public class Moevment : MonoBehaviour
     void Update()
     {
         Jumping();
-        if (sliding)
-        {
-            if (OnSlope() && rb.velocity.y < 0.1f)
+        
+            if (OnSlope() && rb.velocity.y < 0.1f && sliding)
             {
                 desiredMoveSpeed = slideSpeed;
             }
@@ -99,18 +102,15 @@ public class Moevment : MonoBehaviour
                 desiredMoveSpeed = movementSpeed;
             }
             
-        }
+        
 
         if (isGrounded)
         {
             StopAllCoroutines();
             StartCoroutine(Smooth());
         }
-        else
-        {
-            movementSpeed = desiredMoveSpeed;
-        }
-        lastDesiredMoveSpeed = desiredMoveSpeed;
+        
+
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -123,7 +123,7 @@ public class Moevment : MonoBehaviour
     private IEnumerator Smooth()
     {
         float time = 0;
-        float difrence = Mathf.Abs(desiredMoveSpeed - movementSpeed);
+        float difrence = Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed);
         float startValue = speed;
 
         while (time < difrence)
@@ -143,8 +143,7 @@ public class Moevment : MonoBehaviour
             
             yield return null;
         }
-        movementSpeed = desiredMoveSpeed;
-        //print(difrence + " " + time );
+        
     }
     void FixedUpdate()
     {
@@ -343,7 +342,7 @@ public class Moevment : MonoBehaviour
         }
         
     }
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         if(attacking)
         {
@@ -351,5 +350,13 @@ public class Moevment : MonoBehaviour
             Gizmos.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * attackDistance);
         }
         
+    }*/
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Enemy"))
+        {
+            SceneManager.LoadScene(level);
+        }
     }
 }
