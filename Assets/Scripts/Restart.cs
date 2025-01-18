@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Death : MonoBehaviour
+public class Restart : MonoBehaviour
 {
-
-
-
     void Update()
     {
-       if(Input.anyKeyDown)
+        if(Input.anyKey)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            SceneManager.LoadScene("Level 1");
         }
     }
 }
+

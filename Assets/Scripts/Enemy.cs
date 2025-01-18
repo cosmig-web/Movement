@@ -90,14 +90,14 @@ public class Enemy : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(head.position, head.TransformDirection(distance, distance , distance).normalized);
     }*/
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         for (int i = 0; i < path.Count - 1; i++)
         {
             Gizmos.DrawLine(path[i], path[i + 1]);
         }
-    }
+    }*/
 
     
 

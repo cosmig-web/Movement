@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,9 @@ public class Moevment : MonoBehaviour
     private float desiredMoveSpeed;
 
     public float GroundDrag = 0.2f;
+    
+    public GameObject death;
+    public GameObject crossair;
     
     [Header("Jump")]
     public Transform Legs;
@@ -64,7 +68,6 @@ public class Moevment : MonoBehaviour
     private float horizontal;
     private bool isGrounded;
     private RaycastHit hit;
-    public string level = "End";
     private Vector2 input;
     private float x;
     private float z;
@@ -147,8 +150,8 @@ public class Moevment : MonoBehaviour
     }
     void FixedUpdate()
     {
-        x = Input.GetAxisRaw("Horizontal");
-        z = Input.GetAxisRaw("Vertical");
+        x = Input.GetAxis("Horizontal");
+        z = Input.GetAxis("Vertical");
         isGrounded = Physics.Raycast(Legs.position, Legs.TransformDirection(Vector3.down), out hit, radius, groundMask);
         Move();
         SpeedControl();
@@ -292,9 +295,9 @@ public class Moevment : MonoBehaviour
         if(Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, attackDistance, attackLayer))
         {
             HitTarget(hit.point);
-            if(hit.collider.tag == "Enemy")
+            if(hit.collider.CompareTag("Enemy"))
             {
-                Destroy(hit.rigidbody.gameObject);
+                Destroy(hit.transform.gameObject);
             }
         }
         
@@ -354,9 +357,13 @@ public class Moevment : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            SceneManager.LoadScene(level);
+            death.SetActive(true);
+            crossair.SetActive(false);
+            rb.constraints = RigidbodyConstraints.None;
+            
         }
+        
     }
 }
